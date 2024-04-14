@@ -13,7 +13,7 @@ Autores:
 Para compilar: gcc anlex.c tablaSimbolos.c -o anlex
 
 Para ejecutar:
-- En terminal de Linux
+- En terminal de Linux:
  ./anlex "/ruta/a/tu/archivo-fuente.txt"
-- En cmd de Windows
+- En cmd de Windows:
  anlex "\ruta\a\tu\archivo-fuente.txt"
