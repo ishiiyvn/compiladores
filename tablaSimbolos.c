@@ -1,5 +1,19 @@
 #include "anlex.h"
 
+const char* nombresComponentesLexicos[] = {
+    [L_CORCHETE] 		= "L_CORCHETE",
+    [R_CORCHETE] 		= "R_CORCHETE",
+    [L_LLAVE] 			= "L_LLAVE",
+    [R_LLAVE] 			= "R_LLAVE",
+    [COMA] 				= "COMA",
+    [DOS_PUNTOS] 		= "DOS_PUNTOS",
+    [LITERAL_CADENA] 	= "LITERAL_CADENA",
+    [LITERAL_NUM] 		= "LITERAL_NUM",
+    [PR_TRUE] 			= "PR_TRUE",
+    [PR_FALSE] 			= "PR_FALSE",
+    [PR_NULL] 			= "PR_NULL",
+};
+
 /*********************HASH************************/
 entrada *tabla;				//declarar la tabla de simbolos
 int tamTabla=TAMHASH;		//utilizado para cuando se debe hacer rehash
@@ -95,6 +109,12 @@ entrada* buscar(const char *clave)
 	return &tabla[pos];
 }
 
+const char* buscarNombreCompLex(int compLex){
+	if (compLex >= 0 && compLex < sizeof(nombresComponentesLexicos) / sizeof(nombresComponentesLexicos[0])) {
+        return nombresComponentesLexicos[compLex];
+    }
+}
+
 void insertTablaSimbolos(const char *s, int n)
 {
 	entrada e;
@@ -106,64 +126,17 @@ void insertTablaSimbolos(const char *s, int n)
 
 void initTablaSimbolos()
 {
-	int i;
-	const char *vector[]={
-		"program",
-		"type",
-		"var",
-		"array",
-		"begin",
-		"end",
-		"do",
-		"to",
-		"downto",
-		"then",
-		"of",
-		"function",
-		"procedure", 
-		"integer", 
-		"real", 
-		"boolean", 
-		"char", 
-		"for", 
-		"if", 
-		"else", 
-		"while", 
-		"repeat", 
-		"until", 
-		"case", 
-		"record", 
-		"writeln",
-		"write",
-		"const"
-	};
- 	for (i=0;i<28;i++)
-	{
-		insertTablaSimbolos(vector[i],i+256);
-	}
-	insertTablaSimbolos(",",',');
-	insertTablaSimbolos(".",'.');
-	insertTablaSimbolos(":",':');
-	insertTablaSimbolos(";",';');
-	insertTablaSimbolos("(",'(');
-	insertTablaSimbolos(")",')');
-	insertTablaSimbolos("[",'[');
-	insertTablaSimbolos("]",']');
-	insertTablaSimbolos("true",BOOL);
-	insertTablaSimbolos("false",BOOL);
-	insertTablaSimbolos("not",NOT);
-	insertTablaSimbolos("<",OPREL);
-	insertTablaSimbolos("<=",OPREL);
-	insertTablaSimbolos("<>",OPREL);
-	insertTablaSimbolos(">",OPREL);
-	insertTablaSimbolos(">=",OPREL);
-	insertTablaSimbolos("=",OPREL);
-	insertTablaSimbolos("+",OPSUMA);
-	insertTablaSimbolos("-",OPSUMA);
-	insertTablaSimbolos("or",OPSUMA);
-	insertTablaSimbolos("*",OPMULT);
-	insertTablaSimbolos("/",OPMULT);
-	insertTablaSimbolos("div",OPMULT);
-	insertTablaSimbolos("mod",OPMULT);
-	insertTablaSimbolos(":=",OPASIGNA);
+	insertTablaSimbolos("[",L_CORCHETE);
+	insertTablaSimbolos("]",R_CORCHETE);
+	insertTablaSimbolos("{",L_LLAVE);
+	insertTablaSimbolos("}",R_LLAVE);
+	insertTablaSimbolos(",",COMA);
+	insertTablaSimbolos(":",DOS_PUNTOS);
+	insertTablaSimbolos("true",PR_TRUE);
+	insertTablaSimbolos("TRUE",PR_TRUE);
+	insertTablaSimbolos("false",PR_FALSE);
+	insertTablaSimbolos("FALSE",PR_FALSE);
+	insertTablaSimbolos("null",PR_NULL);
+	insertTablaSimbolos("NULL",PR_NULL);
+	insertTablaSimbolos("\n",EOL);
 }
