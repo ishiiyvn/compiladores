@@ -25,12 +25,14 @@ token t;				// token global para recibir componentes del Analizador Lexico
 // variables para el analizador lexico
 
 FILE *archivo;			// Fuente json
+FILE *output;			// Output a generar
 char buff[2*TAMBUFF];	// Buffer para lectura de archivo fuente
 char lexema[TAMLEX];	// Utilizado por el analizador lexico
 int delantero=-1;		// Utilizado por el analizador lexico
 int fin=0;				// Utilizado por el analizador lexico
 int numLinea=1;			// Numero de Linea
 bool imprimir=1;   // Bandera booleana para la impresion de tokens
+
 
 /**************** Funciones **********************/
 
@@ -40,7 +42,7 @@ bool imprimir=1;   // Bandera booleana para la impresion de tokens
 void error(const char* mensaje)
 {	
 	imprimir=0;
-	printf("Lin %d: Error Lexico. %s.",numLinea,mensaje);
+	fprintf(output, "Lin %d: Error Lexico. %s.",numLinea,mensaje);
 }
 
 void getToken()
@@ -56,13 +58,13 @@ void getToken()
 	{
 
 		if (c=='\t')
-			printf("\t");	//formatear con identacion
+			fprintf(output,"\t");	//formatear con identacion
 		else if (c==' ')
-			printf(" ");
+			fprintf(output," ");
 		else if(c=='\n')
 		{
 			//incrementar el numero de linea
-			printf("\n");
+			fprintf(output,"\n");
 			numLinea++;
 			imprimir=1;
 			continue;
@@ -331,11 +333,13 @@ int main(int argc,char* args[])
 			printf("Archivo no encontrado.\n");
 			exit(1);
 		}
+		output = fopen("output.txt", "w");
 		while (t.compLex!=EOF){
 			getToken();
 			if(imprimir==1)
-				printf("%s ",buscarNombreCompLex(t.pe->compLex));
+				fprintf(output, "%s ",buscarNombreCompLex(t.pe->compLex));
 		}
+		fclose(output);
 		fclose(archivo);
 	}else{
 		printf("Debe pasar como parametro el path al archivo fuente.\n");
