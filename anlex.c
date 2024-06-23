@@ -278,9 +278,9 @@ void getToken()
 						break;
 					}
 				}
-				else if (!isascii(c) && imprimir == 1){
+				/*else if (!isascii(c) && imprimir == 1){
 					error("Caracter no encontrado");
-				}
+				}*/
 				else if(c==EOF)
 				{
 					error("Se llego al fin de archivo sin finalizar un literal");
@@ -339,7 +339,7 @@ int main(int argc,char* args[])
 		fclose(archivo);
 	}else{
 		printf("Debe pasar como parametro el path al archivo fuente.\n");
-		exit(1);
+exit(1);
 	}
 
 	return 0;
