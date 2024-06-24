@@ -320,31 +320,222 @@ void getToken()
 	
 }
 
-int main(int argc,char* args[])
-{
-	// inicializar analizador lexico
+// Declaraciones de funciones de parsing
+void json();
+void element();
+void array();
+void e_prime();
+void element_list();
+void element_list_prime();
+void object();
+void a_prime();
+void attribute_list();
+void attribute_list_prime();
+void attribute();
+void attribute_name();
+void attribute_value();
 
-	initTabla();
-	initTablaSimbolos();
-	if(argc > 1)
-	{
-		if (!(archivo=fopen(args[1],"rt")))
-		{
-			printf("Archivo no encontrado.\n");
-			exit(1);
-		}
-		output = fopen("output.txt", "w");
+void match(int expectedToken);
+void error_sintactico(const char* mensaje);
+
+void json() {
+	switch (t.compLex)
+    {
+    case L_LLAVE:
+        object();
+        break;
+    case L_CORCHETE:
+        array();
+        break;
+    
+	default:
+        break;
+    }
+}
+
+void element() {
+
+	switch (t.compLex)
+    {
+    case L_CORCHETE:
+        match(L_CORCHETE);
+        e_prime();
+        match(R_CORCHETE);
+        break;
+    
+    default:
+        break;
+    }
+}
+
+void array() {
+    switch (t.compLex)
+    {
+    case L_CORCHETE:
+        match(L_CORCHETE);
+        e_prime();
+        match(R_CORCHETE);
+        break;
+    
+    default:
+        break;
+    }
+}
+
+void e_prime() {
+    switch (t.compLex)
+    {
+    case L_LLAVE:
+    case L_CORCHETE:
+        element_list();
+        break;
+    }
+}
+
+void element_list() {
+    switch (t.compLex)
+    {
+    case L_LLAVE:
+    case L_CORCHETE:
+        element();
+        element_list();
+        break;
+    default:
+        break;
+    }
+}
+
+void element_list_prime() {
+    switch (t.compLex)
+    {
+    case COMA:
+        match(COMA);
+        element();
+        element_list();
+        break;
+    }
+}
+
+void object() {
+   switch (t.compLex)
+    {
+    case L_LLAVE:
+        match(L_LLAVE);
+        a_prime();
+        match(R_LLAVE);
+        break;
+    }
+}
+
+void a_prime() {
+    switch (t.compLex)
+    {
+    case LITERAL_CADENA:
+        attribute_list();
+        break;
+    }
+}
+
+void attribute_list() {
+    switch (t.compLex)
+    {
+    case LITERAL_CADENA:
+        attribute();
+        attribute_list_prime();
+        break;
+    
+    default:
+        break;
+    }
+}
+
+void attribute_list_prime() {
+    switch (t.compLex)
+    {
+    case COMA:
+        match(COMA);
+        attribute();
+        attribute_list_prime();
+        break;
+    }
+}
+
+void attribute() {
+    switch (t.compLex)
+    {
+    case LITERAL_CADENA:
+        attribute_name();
+        match(DOS_PUNTOS);
+        attribute_value();
+        break;
+    
+    default:    
+        break;
+    }
+}
+
+void attribute_name() {
+    switch (t.compLex)
+    {
+    case LITERAL_CADENA:
+        match(LITERAL_CADENA);
+        break;
+    
+    default:
+        break;
+    }
+}
+
+void attribute_value() {
+    if (t.compLex == LITERAL_CADENA || t.compLex == LITERAL_NUM || t.compLex == PR_TRUE || t.compLex == PR_FALSE || t.compLex == PR_NULL) {
+        match(t.compLex);
+    } else if (t.compLex == L_LLAVE || t.compLex == L_CORCHETE) {
+        element();
+    } else {
+		error("x");
+	}
+}
+
+void match(int expectedToken) {
+    if (t.compLex == expectedToken) {
+        getToken();
+    } else {
+        error_sintactico("Token no esperado");
+    }
+}
+
+void error_sintactico(const char* mensaje) {
+    printf("Error sintáctico en línea %d: %s.\n", numLinea, mensaje);
+}
+
+int main(int argc, char* args[]) {
+    // Inicializar analizador léxico
+    initTabla();
+    initTablaSimbolos();
+
+    if (argc > 1) {
+        if (!(archivo = fopen(args[1], "rt"))) {
+            printf("Archivo no encontrado.\n");
+            exit(1);
+        }
+        output = fopen("output.txt", "w");
+        json();
 		while (t.compLex!=EOF){
 			getToken();
 			if(imprimir==1)
 				fprintf(output, "%s ",buscarNombreCompLex(t.pe->compLex));
-		}
-		fclose(output);
-		fclose(archivo);
-	}else{
-		printf("Debe pasar como parametro el path al archivo fuente.\n");
-exit(1);
-	}
+		}		
+        if (t.compLex == EOF) {
+            printf("Parsing completo sin errores.\n");
+        } else {
+            printf("Símbolos inesperados después del fin de la entrada");
+        }
+        fclose(output);
+        fclose(archivo);
+    } else {
+        printf("Debe pasar como parámetro el path al archivo fuente.\n");
+        exit(1);
+    }
 
-	return 0;
+    return 0;
 }
