@@ -43,7 +43,7 @@ bool imprimir=1;   // Bandera booleana para la impresion de tokens
 void error(const char* mensaje)
 {	
 	imprimir=0;
-	fprintf(output, "Lin %d: Error Lexico. %s.",numLinea,mensaje);
+	//fprintf(output, "Lin %d: Error Lexico. %s.",numLinea,mensaje);
 }
 
 void getToken()
@@ -59,13 +59,16 @@ void getToken()
 	{
 
 		if (c=='\t')
-			fprintf(output,"\t");	//formatear con identacion
+			continue;
+			//fprintf(output,"\t");	//formatear con identacion
 		else if (c==' ')
-			fprintf(output," ");
+			continue;
+			//fprintf(output," ");
 		else if(c=='\n')
 		{
+			continue;
 			//incrementar el numero de linea
-			fprintf(output,"\n");
+			//fprintf(output,"\n");
 			numLinea++;
 			imprimir=1;
 			continue;
@@ -322,18 +325,13 @@ void getToken()
 }
 
 void json(int synchset[], int synchset_size) {
-	printf("json\n");
     int synchset_element[] = {EOF, ',', '}', ']'};
     int synchset_element_size = sizeof(synchset_element)/sizeof(synchset_element[0]);
-	printf("%d\n", synchset_element_size);
 
     int first_json[] = {'{','['};
     int first_size = sizeof(first_json)/ sizeof(first_json[0]);
-	printf("%d\n", first_size); 
 	check_input(first_json, first_size, synchset, synchset_size);
-	printf("antes if json\n");
 	if (!token_in_set(t.compLex, synchset, synchset_size)){
-		printf("if json");
         element(synchset_element, synchset_element_size);
         match(EOF);
 		check_input(synchset, synchset_size, first_json, first_size);
@@ -341,7 +339,6 @@ void json(int synchset[], int synchset_size) {
 }
 
 void element(int synchset[], int synchset_size) {
-	printf("element\n");
     int synchset_object_array[] = {EOF, ',', ']', '}'};
     int synchset_object_array_size = sizeof(synchset_object_array) / sizeof(synchset_object_array[0]);
 
@@ -350,7 +347,6 @@ void element(int synchset[], int synchset_size) {
 
 	check_input(first_element, first_element_size, synchset, synchset_size);
 	if (!token_in_set(t.compLex, synchset, synchset_size)){
-		printf("entra element\n");
 		switch (t.compLex)
 		{
 		case '{':
@@ -363,13 +359,11 @@ void element(int synchset[], int synchset_size) {
 		default:
 			error_sintactico("xx");
 		}
-		printf("Check input element");
 	    check_input(synchset, synchset_size, first_element, first_element_size);
 	}
 }
 
 void array(int synchset[], int synchset_size) {
-	printf("array\n");
     int synchset_e_prime[] = {']'};
     int synchset_e_prime_size = sizeof(synchset_e_prime) / sizeof(synchset_e_prime[0]);
 
@@ -386,7 +380,6 @@ void array(int synchset[], int synchset_size) {
 }
 
 void e_prime(int synchset[], int synchset_size) {
-    printf("eprime\n");
 	int synchset_element_list[] = {']'};
     int synchset_element_list_size = sizeof(synchset_element_list)/ sizeof(synchset_element_list[0]);
 
@@ -395,7 +388,6 @@ void e_prime(int synchset[], int synchset_size) {
 
 	//check_input(first_e_prime, first_e_prime_size, synchset, synchset_size);
 	if (!token_in_set(t.compLex, synchset, synchset_size)){
-		printf("Entra e prime");
 		switch (t.compLex)
 		{
 		case '{':
@@ -408,7 +400,6 @@ void e_prime(int synchset[], int synchset_size) {
 }
 
 void element_list(int synchset[], int synchset_size) {
-    printf("element list\n");
 	// Sets de sincronizacion de element() y element_list()
     int synchset_element[] = {EOF, ',', ']', '}'};
     int synchset_element_size = sizeof(synchset_element) / sizeof(synchset_element[0]);
@@ -428,7 +419,6 @@ void element_list(int synchset[], int synchset_size) {
 }
 
 void element_list_prime(int synchset[], int synchset_size) {
-    printf("element list prime\n");
 	// Sets de sincronizacion de element() y element_list()
     int synchset_element[] = {EOF, ',', '}', ']'};
     int synchset_element_size = sizeof(synchset_element) / sizeof(synchset_element[0]);
@@ -442,25 +432,20 @@ void element_list_prime(int synchset[], int synchset_size) {
 	if (t.compLex != ']' ){
 		check_input(first_element_list_prime, first_element_list_prime_size, synchset, synchset_size);
 		if (!token_in_set(t.compLex, synchset, synchset_size)){
-			printf("Entra element list prime");
 			switch (t.compLex)
 			{
 			case ',':
 				match(',');
-				printf("xd element list prime\n");
 				element(synchset_element, synchset_element_size);
-				printf("xd element list prime\n");
 				element_list_prime(synchset_element_list_prime, synchset_element_list_prime_size);
 				break;
 			}
-			printf("check input element list prime\n");
 			check_input(synchset, synchset_size, first_element_list_prime, first_element_list_prime_size);
 		}
 	}
 }
 
 void object(int synchset[], int synchset_size) {
-	printf("object\n");
     // Conjunto de sincronizacion de a_prime()
     int synchset_a_prime[] = {'}'};
     int synchset_a_prime_size = sizeof(synchset_a_prime) / sizeof(synchset_a_prime[0]);
@@ -479,7 +464,6 @@ void object(int synchset[], int synchset_size) {
 }
 
 void a_prime(int synchset[], int synchset_size) {
-	printf("a prime\n");
     // Conjunto de sincronizacion de attribute_list()
     int synchset_attribute_list[] = {'}'};
     int synchset_attribute_list_size = sizeof(synchset_attribute_list) / sizeof(synchset_attribute_list[0]);
@@ -490,7 +474,6 @@ void a_prime(int synchset[], int synchset_size) {
 
     check_input(firstset_a_prime, firstset_a_prime_size, synchset, synchset_size);	
 	if (!token_in_set(t.compLex, synchset, synchset_size)){	
-		printf("Entro a prima\n");
 		switch (t.compLex)
     	{
     	case LITERAL_CADENA:
@@ -502,7 +485,6 @@ void a_prime(int synchset[], int synchset_size) {
 }
 
 void attribute_list(int synchset[], int synchset_size) {
-	printf("attribute list\n");
     // Conjuntos de sincronizacion de attribute() y attribute_list_prime()
     int synchset_attribute[] = {',', '}'};
     int synchset_attribute_size = sizeof(synchset_attribute) / sizeof(synchset_attribute[0]);
@@ -523,7 +505,6 @@ void attribute_list(int synchset[], int synchset_size) {
 }
 
 void attribute_list_prime(int synchset[], int synchset_size) {
-	printf("attribute list prime\n");
     // Conjuntos de sincronizacion de attribute() y attribute_list_prime()
     int synchset_attribute[] = {',', '}'};
     int synchset_attribute_size = sizeof(synchset_attribute) / sizeof(synchset_attribute[0]);
@@ -545,14 +526,12 @@ void attribute_list_prime(int synchset[], int synchset_size) {
 				attribute_list_prime(synchset_attribute_list_prime, synchset_attribute_list_prime_size);
 				break;
 			}
-			printf("vuelve atribute prime list");
 			check_input(synchset, synchset_size, first_attribute_list_prime, first_attribute_list_prime_size);
 		}
 	}
 }
 
 void attribute(int synchset[], int synchset_size) {
-	printf("attribute\n");
     // Conjuntos de sincronizacion de attribute_name() y attribute_value()
     int synchset_attribute_name[] = {':'};
     int synchset_attribute_name_size = sizeof(synchset_attribute_name) / sizeof(synchset_attribute_name[0]);
@@ -573,7 +552,6 @@ void attribute(int synchset[], int synchset_size) {
 }
 
 void attribute_name(int synchset[], int synchset_size) { 
-	printf("attribute name\n");
     // Conjunto primero de attribute_name()
     int first_attribute_name [] = {LITERAL_CADENA};
     int first_attribute_name_size = sizeof(first_attribute_name) / sizeof(first_attribute_name[0]);
@@ -586,7 +564,6 @@ void attribute_name(int synchset[], int synchset_size) {
 }
 
 void attribute_value(int synchset[], int synchset_size) {
-	printf("attribute value\n");
     // Conjunto de sincronizacion de element()
     int synchset_element[] = {EOF, ',', ']', '}'};
     int synchset_element_size = sizeof(synchset_element) / sizeof(synchset_element[0]);
@@ -597,7 +574,6 @@ void attribute_value(int synchset[], int synchset_size) {
 
 	check_input(first_attribute_value, first_attribute_value_size, synchset, synchset_size);
 	if (!token_in_set(t.compLex, synchset, synchset_size)){
-		printf("Entra attribute value\n");
 		switch (t.compLex)
 		{
 		case LITERAL_CADENA:
@@ -614,9 +590,7 @@ void attribute_value(int synchset[], int synchset_size) {
 		default:
 			error_sintactico("x");
 		}
-		printf("Check input de attribute value\n");
 		check_input(synchset, synchset_size, first_attribute_value, first_attribute_value_size);
-		printf("After check input\n");
 	}
 }
 
@@ -630,7 +604,6 @@ int token_in_set(int token, int set[], int set_size){
 };
 
 void match(int expectedToken) {
-	printf("Expected token %d\n", expectedToken);
     if (t.compLex == expectedToken) {
         getToken();
     } else {
@@ -644,14 +617,11 @@ void check_input(int firstset[], int firstset_size, int followset[], int follows
 
     for (int i = 0; i < firstset_size; i++){
         firstfollow[i] = firstset[i];
-		printf("first %d\n", firstset[i]);
     }
 
     for (int i = 0; i < followset_size; i++){
         firstfollow[firstset_size + i] = followset[i];
-		printf("follow %d\n", followset[i]);
     }
-	printf("t.complex %d\n", t.compLex);
     if (!token_in_set(t.compLex, firstset, firstset_size)){
         error_sintactico("No reconocido");
         scan_to(firstfollow, firstfollow_size);
@@ -680,7 +650,6 @@ int main(int argc, char* args[]) {
     int synchset_size = sizeof(synchset_json) / sizeof(synchset_json[0]); 
 
     if (argc > 1) {
-		printf("Envia argumentos\n");
         if (!(archivo = fopen(args[1], "rt"))) {
             printf("Archivo no encontrado.\n");
             exit(1);
@@ -689,8 +658,8 @@ int main(int argc, char* args[]) {
         json(synchset_json, synchset_size);
         fclose(archivo);
 
-        if (t.compLex == EOF) printf("Parseado con éxito.");
-        else printf("Símbolo inesperado");
+        if (t.compLex == EOF) printf("Parseado con exito.");
+        else printf("Simbolo inesperado");
     } else {
         printf("Debe pasar como parámetro el path al archivo fuente.\n");
         exit(1);
