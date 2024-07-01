@@ -17,3 +17,4 @@ void match(int expectedToken);
 void check_input(int firstset[], int firstset_size, int followset[], int followset_size);
 void scan_to(int synchset[], int synchset_size);
 void error_sintactico(const char* mensaje);
+void quitar_comillas(char *cadena);
