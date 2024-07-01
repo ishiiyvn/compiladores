@@ -33,6 +33,7 @@ int delantero=-1;		// Utilizado por el analizador lexico
 int fin=0;				// Utilizado por el analizador lexico
 int numLinea=1;			// Numero de Linea
 bool imprimir=1;   // Bandera booleana para la impresion de tokens
+int errors = 1;
 
 
 /**************** Funciones **********************/
@@ -59,16 +60,14 @@ void getToken()
 	{
 
 		if (c=='\t')
-			continue;
-			//fprintf(output,"\t");	//formatear con identacion
+			fprintf(output,"\t");	//formatear con identacion
 		else if (c==' ')
-			continue;
-			//fprintf(output," ");
+			
+			fprintf(output," ");
 		else if(c=='\n')
 		{
-			continue;
 			//incrementar el numero de linea
-			//fprintf(output,"\n");
+			fprintf(output,"\n");
 			numLinea++;
 			imprimir=1;
 			continue;
@@ -357,7 +356,7 @@ void element(int synchset[], int synchset_size) {
             break;
 		
 		default:
-			error_sintactico("xx");
+			error_sintactico("No esperado");
 		}
 	    check_input(synchset, synchset_size, first_element, first_element_size);
 	}
@@ -588,7 +587,7 @@ void attribute_value(int synchset[], int synchset_size) {
 			element(synchset_element, synchset_element_size);
 			break;
 		default:
-			error_sintactico("x");
+			error_sintactico("No esperado");
 		}
 		check_input(synchset, synchset_size, first_attribute_value, first_attribute_value_size);
 	}
@@ -633,13 +632,14 @@ void scan_to(int synchset[], int synchset_size){
 		synchset[i] = synchset[i];
 	}
 
-	while (!token_in_set(t.compLex, synchset, synchset_size) || t.compLex != EOF){
+	while (!token_in_set(t.compLex, synchset, synchset_size)){ //|| t.compLex != EOF){
 		getToken();
 	}
 }
 
-void error_sintactico(const char* mensaje) {
-    printf("Error sintáctico en línea %d: %s.\n", numLinea, mensaje);
+void error_sintactico(char * mensaje) {
+	errors = 0;
+    printf("Error sintactico en linea %d: %s.\n", numLinea, mensaje);
 }
 
 int main(int argc, char* args[]) {
@@ -658,8 +658,8 @@ int main(int argc, char* args[]) {
         json(synchset_json, synchset_size);
         fclose(archivo);
 
-        if (t.compLex == EOF) printf("Parseado con exito.");
-        else printf("Simbolo inesperado");
+        if (errors) printf("Parseado con exito.");
+        else printf("Parseado fracasado, simbolo inesperado");
     } else {
         printf("Debe pasar como parámetro el path al archivo fuente.\n");
         exit(1);
