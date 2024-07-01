@@ -11,9 +11,9 @@ Autores:
 - Mateo Brizuela (mateorexto2001@fpuna.edu.py)
 
 Para compilar: 
-Tarea 1: gcc anlex.c tablaSimbolos.c -o anlex
-Tarea 2: gcc anpar.c tablaSimbolos.c -o anpar
-Tarea 3: gcc antrad.c tablaSimbolos.c -o antrad
+- Tarea 1: gcc anlex.c tablaSimbolos.c -o anlex
+- Tarea 2: gcc anpar.c tablaSimbolos.c -o anpar
+- Tarea 3: gcc antrad.c tablaSimbolos.c -o antrad
 
 Para ejecutar:
 - En terminal de Linux:
